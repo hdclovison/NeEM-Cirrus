@@ -1,0 +1,22 @@
+#!/bin/sh
+#Uso: rodaHelloWorld 
+	#1=iplocal
+	#2=num_nodos_a_criar
+	#3=intervalo_de_envio
+cd ~/logsBolsa
+if [ -a nodo10001.log ]
+then
+	rm -I *.log
+	echo Excluindo logs atuais
+fi
+cd ~/workspace/Apps/src
+javac apps/HelloWorld.java
+COM_FINAL="java apps.HelloWorld $1:$((10000+$2)) p $3 "
+for ((i=1; i<$2; i++))
+do
+	j=$((10000+$i))
+	java apps.HelloWorld $1:$j n 0 >> ~/logsBolsa/nodo$j.log &
+	COM_FINAL=$COM_FINAL" "$1:$j
+done
+$COM_FINAL >> ~/logsBolsa/nodo$((10000+$2)).log &
+echo Experimento rodando em background, entre as portas 10001 e $((10000+$2)). Para encerrar todos os nodos, use killall -9 java.
